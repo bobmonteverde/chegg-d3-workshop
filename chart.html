@@ -1,0 +1,59 @@
+<html>
+  <head>
+
+    <style type="text/css">
+
+
+    .land {
+      fill: #222;
+    }
+
+    .county-boundary {
+      fill: none;
+      stroke: #fff;
+      stroke-width: .5px;
+    }
+
+    .state {
+      fill: #ccc;
+      stroke: #fff;
+    }
+
+    </style>
+
+
+  </head>
+  <body>
+
+    <div class="chartWrap">
+      <svg id="chart1" />
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+    <script src="chart.js"></script>
+
+
+    <script>
+
+      var chart1svg = d3.select('#chart1');
+      var chart1map = cheggMap();
+
+
+      d3.json("us.json", function(error, us) {
+      //d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/us.json", function(error, us) {
+
+        chart1svg
+          .datum(us)
+          //.datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+          .call(chart1map);
+
+      });
+
+
+    </script>
+
+  </body>
+</html>
