@@ -30,13 +30,53 @@
       var chart1svg = d3.select('#chart1');
       var chart1map = cheggMap();
 
+      var name_id_map = {};
+
+      // Used to convert Flat data into nested data by Year/Month
+      var nest = d3.nest()
+        .key(function(d) { return d.created_date_ym })
+        .sortKeys(d3.ascending);
+
+
+      // Get TopoJSON data for generating US map
       d3.json('us.json', function(error, us) {
         if (error) throw error;
         //console.log('us', us);
 
-        chart1svg
-          .datum({ map: us })
-          .call(chart1map);
+
+        // Get State name/abbr and ID (TopoJSON references States by numeric ID)
+        d3.tsv('us-state-names.tsv', function(error, names) {
+          if (error) throw error;
+          //console.log('names', names);
+
+          // Create a map to convert state abbreviation to state ID #
+          for (var i = 0; i < names.length; i++) {
+            name_id_map[names[i].code]    = names[i].id;
+          }
+          //console.log('name_id_map', name_id_map);
+
+
+          // Grab the actual Data (counts per state per month)
+          d3.csv('inq_date_state.csv', function(error, data) {
+            if (error) throw error;
+            //console.log('data', data);
+
+            //Inject 'id' into data (need to reference states by numeric ID)
+            data.forEach(function(d) {
+              d.id = name_id_map[d.state];
+            });
+
+            nestedData = nest.entries(data);
+            //console.log('nestedData', nestedData);
+
+            chart1svg
+              .datum({ map: us, data: nestedData[0].values })
+              .call(chart1map);
+
+          });
+
+        });
+
       });
 
 
