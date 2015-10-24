@@ -8,9 +8,13 @@ var cheggMap = function() {
     ;
 
 
+  var projection = d3.geo.albersUsa()
+      .scale(1000);
+
 
   function chart(selection) {
     selection.each(function(data) {
+
 
       var container = d3.select(this);
 
@@ -19,12 +23,30 @@ var cheggMap = function() {
           .style('height', height);
 
 
+      projection
+          .translate([width / 2, height / 2]);
+
+      var path = d3.geo.path()
+          .projection(projection);
+
+
+
+
       var wrap = container.selectAll('g.chart-wrap').data([data]);
       var wrapEnter = wrap.enter().append('g').attr('class', 'chart-wrap');
       var gEnter = wrapEnter.append('g');
       var g = wrap.select('g');
 
+      gEnter.append('g').attr('class', 'states')
+
       wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+
+      g.select('.states').selectAll('path')
+          .data(topojson.feature(data.map, data.map.objects.states).features)
+        .enter().append('path')
+          .attr('class', 'state')
+          .attr('d', path);
 
 
     });

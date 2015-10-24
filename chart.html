@@ -27,6 +27,18 @@
 
     <script>
 
+      var chart1svg = d3.select('#chart1');
+      var chart1map = cheggMap();
+
+      d3.json('us.json', function(error, us) {
+        if (error) throw error;
+        //console.log('us', us);
+
+        chart1svg
+          .datum({ map: us })
+          .call(chart1map);
+      });
+
 
 
     </script>
