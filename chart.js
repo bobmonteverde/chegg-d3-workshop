@@ -19,12 +19,16 @@ var cheggMap = function() {
           .style('height', height);
 
 
+      //--------------------------------------
+      // Setup common SVG
       var wrap = container.selectAll('g.chart-wrap').data([data]);
       var wrapEnter = wrap.enter().append('g').attr('class', 'chart-wrap');
       var gEnter = wrapEnter.append('g');
       var g = wrap.select('g');
 
+      // Account for margin
       wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      //--------------------------------------
 
 
     });
