@@ -12,7 +12,7 @@ python -m SimpleHTTPServer 8080
 ```
 Then navigate in your browser to: http://localhost:8080/chart.html
 
-*Please checkout each step's branch (step#, step1-5) to see the full code for the step.  The code listed here only highlights core pieces of code, otehr code is required to make things work.
+*Please checkout each step's branch (step#, step1-5) to see the full code for the step.  The code listed here only highlights core pieces of code, other code is required to make things work.
 
 
 ## Step 1: Setup the HTML and JS templates
