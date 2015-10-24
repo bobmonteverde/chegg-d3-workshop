@@ -1,5 +1,19 @@
 # D3.js, Intro to Web Based Data Visualization
 
+To start, please clone this repo, and checkout 'step1' branch.
+```shell
+git clone git@github.com:bobmonteverde/chegg-d3-workshop.git
+git checkout step1
+```
+
+To run the example you need to run a simple HTTP server, on Mac OSX or Linux simply open your terminal, navigate to the repo's directory and run:
+```shell
+python -m SimpleHTTPServer 8080
+```
+Then navigate in your browser to: http://localhost:8080/chart.html
+
+
+
 ## Step 1: Setup the HTML and JS templates
 
 Create a simple HTML file (chart.html), get d3.js and topojson.js from a CDN
