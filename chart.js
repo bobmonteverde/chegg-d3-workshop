@@ -30,16 +30,20 @@ var cheggMap = function() {
           .projection(projection);
 
 
-
-
+      //--------------------------------------
+      // Setup common SVG
       var wrap = container.selectAll('g.chart-wrap').data([data]);
       var wrapEnter = wrap.enter().append('g').attr('class', 'chart-wrap');
       var gEnter = wrapEnter.append('g');
       var g = wrap.select('g');
 
+      // Chart's layers
       gEnter.append('g').attr('class', 'states')
 
+      // Account for margin
       wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      //--------------------------------------
+
 
 
       g.select('.states').selectAll('path')
