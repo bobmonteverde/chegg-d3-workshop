@@ -3,17 +3,6 @@
 
     <style type="text/css">
 
-
-    .land {
-      fill: #222;
-    }
-
-    .county-boundary {
-      fill: none;
-      stroke: #fff;
-      stroke-width: .5px;
-    }
-
     .state {
       fill: #ccc;
       stroke: #fff;
@@ -41,14 +30,60 @@
       var chart1svg = d3.select('#chart1');
       var chart1map = cheggMap();
 
+      var nestedData;
+      var valueById = {};
+      var name_id_map = {};
 
-      d3.json("us.json", function(error, us) {
-      //d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/us.json", function(error, us) {
+      var nest = d3.nest()
+        .key(function(d) { return d.created_date_ym })
+        .sortKeys(d3.ascending);
 
-        chart1svg
-          .datum(us)
-          //.datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-          .call(chart1map);
+
+      d3.json('us.json', function(error, us) {
+        if (error) throw error;
+        //console.log('us', us);
+
+        d3.tsv('us-state-names.tsv', function(error, names) {
+          if (error) throw error;
+          //console.log('names', names);
+
+          for (var i = 0; i < names.length; i++) {
+            name_id_map[names[i].code]    = names[i].id;
+          }
+
+          //console.log('name_id_map', name_id_map);
+
+
+          d3.csv('inq_date_state.csv', function(error, data) {
+            if (error) throw error;
+            //console.log('data', data);
+
+            data.forEach(function(d) {
+              var id = name_id_map[d.state];
+              d.id = id;
+              valueById[id] = (valueById[id] || 0) + parseInt(d.count);
+            });
+
+            //console.log('valueById', valueById);
+
+
+            nestedData = nest.entries(data);
+
+            function buildChart(i, delay) {
+              setTimeout(function() {
+                chart1svg
+                  .datum({map: us, data: nestedData[i].values })
+                  .call(chart1map);
+              }, delay);
+            }
+
+            for (var i = 0; i < nestedData.length; i++) {
+              buildChart(i, i * 2000);
+            }
+
+          });
+
+        });
 
       });
 

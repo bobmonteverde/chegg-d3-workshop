@@ -7,14 +7,24 @@ var cheggMap = function() {
     , height = 500
     ;
 
-  //var projection = d3.geo.albersUsa()
-      //.scale(1070)
-      //.translate([width / 2, height / 2]);
 
   var projection = d3.geo.albersUsa()
-      //.origin([-98, 38])
-      .scale(1000)
-      //.translate([640, 360]);
+      .scale(1000);
+
+  var colorScale = d3.scale.linear()
+      //.domain([0, 1.0])
+      .range(['#dddddd', '#1c437b']);
+
+
+  function mapToID(values) {
+    var ret = {};
+
+    values.forEach(function(d) {
+      ret[d.id] = d;
+    });
+
+    return ret;
+  }
 
 
 
@@ -22,13 +32,18 @@ var cheggMap = function() {
     selection.each(function(data) {
 
       var container = d3.select(this);
+      var dataByID = mapToID(data.data);
+
+      colorScale
+        .domain(d3.extent(data.data, function(d) { return +d.count }));
+
 
       container
           .style('width', width)
           .style('height', height);
 
 
-     projection
+      projection
           .translate([width / 2, height / 2]);
 
       var path = d3.geo.path()
@@ -37,7 +52,6 @@ var cheggMap = function() {
 
       var wrap = container.selectAll('g.chart-wrap').data([data]);
       var wrapEnter = wrap.enter().append('g').attr('class', 'chart-wrap');
-      //var defsEnter = wrapEnter.append('defs');
       var gEnter = wrapEnter.append('g');
       var g = wrap.select('g');
 
@@ -47,24 +61,20 @@ var cheggMap = function() {
       wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 
-      //g.select('.states').insert("path", ".graticule")
-          //.datum(topojson.feature(data, data.objects.land))
-          //.attr("class", "land")
-          //.attr("d", path);
+      var states = g.select('.states').selectAll('path')
+          .data(topojson.feature(data.map, data.map.objects.states).features)
 
-
-      //g.select('.states').insert('path', '.graticule')
-          //.datum(topojson.mesh(data, data.objects.states, function(a, b) { return a !== b; }))
-      g.select('.states').selectAll('path')
-          .data(topojson.feature(data, data.objects.states).features)
-        .enter().append('path')
-          .attr("class", "state")
+      states.enter().append('path')
+          .attr('class', 'state')
           .attr('d', path);
 
-        //g.select('.states').selectAll('path')
-            //.data(function(d) { console.log(d); return d})
-          //.enter().append('path')
-            //.attr('d', path);
+      states.transition().duration(1000)
+          .style('fill', function(d) {
+            var point = dataByID[d.id],
+                val = (point && point.count) || 0;
+
+            return colorScale(val);
+          })
 
 
     });
