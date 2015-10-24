@@ -69,9 +69,17 @@
             nestedData = nest.entries(data);
             //console.log('nestedData', nestedData);
 
-            chart1svg
-              .datum({ map: us, data: nestedData[0].values })
-              .call(chart1map);
+            function buildChart(i, delay) {
+              setTimeout(function() {
+                chart1svg
+                  .datum({map: us, data: nestedData[i].values })
+                  .call(chart1map);
+              }, delay);
+            }
+
+            for (var i = 0; i < nestedData.length; i++) {
+              buildChart(i, i * 2000);
+            }
 
           });
 

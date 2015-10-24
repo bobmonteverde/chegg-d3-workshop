@@ -69,11 +69,16 @@ var cheggMap = function() {
 
 
 
-      g.select('.states').selectAll('path')
-          .data(topojson.feature(data.map, data.map.objects.states).features)
-        .enter().append('path')
+      var states = g.select('.states').selectAll('path')
+          .data(topojson.feature(data.map, data.map.objects.states).features);
+
+      states.enter().append('path')
           .attr('class', 'state')
           .attr('d', path)
+
+
+      // Setting fill on update NOT enter so that values can be updated after generating the map
+      states.transition().duration(1000)
           .style('fill', function(d) {
             var point = dataByID[d.id],
                 val = (point && point.count) || 0;
