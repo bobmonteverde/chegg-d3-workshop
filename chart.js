@@ -11,16 +11,38 @@ var cheggMap = function() {
   var projection = d3.geo.albersUsa()
       .scale(1000);
 
+  var colorScale = d3.scale.linear()
+      .range(['#dddddd', '#1c437b']);
+
+
+  // Helper function to convert array of values into associated map with the State ID # as the key
+  function mapToID(values) {
+    var ret = {};
+
+    values.forEach(function(d) {
+      ret[d.id] = d;
+    });
+
+    return ret;
+  }
+
+
 
   function chart(selection) {
     selection.each(function(data) {
 
+      var dataByID = mapToID(data.data);
 
       var container = d3.select(this);
 
       container
           .style('width', width)
           .style('height', height);
+
+
+      // Calculate State's color by the extent of the data range
+      colorScale
+        .domain(d3.extent(data.data, function(d) { return +d.count }));
 
 
       projection
@@ -30,23 +52,34 @@ var cheggMap = function() {
           .projection(projection);
 
 
-
-
+      //--------------------------------------
+      // Setup common SVG
       var wrap = container.selectAll('g.chart-wrap').data([data]);
       var wrapEnter = wrap.enter().append('g').attr('class', 'chart-wrap');
       var gEnter = wrapEnter.append('g');
       var g = wrap.select('g');
 
+      // Chart's layers
       gEnter.append('g').attr('class', 'states')
 
+      // Account for margin
       wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      //--------------------------------------
+
+
 
 
       g.select('.states').selectAll('path')
           .data(topojson.feature(data.map, data.map.objects.states).features)
         .enter().append('path')
           .attr('class', 'state')
-          .attr('d', path);
+          .attr('d', path)
+          .style('fill', function(d) {
+            var point = dataByID[d.id],
+                val = (point && point.count) || 0;
+
+            return colorScale(val);
+          });
 
 
     });
